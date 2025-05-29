@@ -1,0 +1,19 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: Bash@3
+  displayName: 'Run OWASP ZAP Security Scan'
+  inputs:
+    targetType: 'inline'
+    script: |
+      docker run -v $(System.DefaultWorkingDirectory):/zap/wrk -t owasp/zap2docker-stable zap-baseline.py -t https://your-app-url.com -r zap_report.html
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish ZAP Report'
+  inputs:
+    pathtoPublish: 'zap_report.html'
+    artifactName: 'ZAPSecurityReport'
